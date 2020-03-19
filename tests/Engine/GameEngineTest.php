@@ -11,14 +11,20 @@
  * @copyright  03.2020 Raspberry Vision
  */
 
-namespace App\Tests\Generator;
+namespace App\Tests\Engine;
 
+use App\Engine\GameEngine;
+use App\Engine\GameEngineInterface;
+use App\Engine\PlayableInterface;
+use App\Model\AbstractGame;
+use App\Model\GameRound;
+use App\Model\SlotsGame;
 use PHPUnit\Framework\TestCase;
 
 class GameEngineTest extends TestCase
 {
     /**
-     * Check that GameEngine class implement GameableInterface.
+     * Check that GameEngine class implement PlayableInterface.
      *
      * @dataProvider dataProviderCreate
      * @param array $testCase
@@ -27,7 +33,7 @@ class GameEngineTest extends TestCase
     {
         $gameEngine = $this->createGameEngine($testCase);
 
-        $this->assertInstanceOf(GameableInterface::class, $gameEngine);
+        $this->assertInstanceOf(GameEngineInterface::class, $gameEngine);
     }
 
     /**
@@ -38,20 +44,18 @@ class GameEngineTest extends TestCase
      */
     public function testCreate(array $testCase)
     {
-        $gameEngine = $this->createGameEngine(
-            $testCase
-        );
+        $gameEngine = $this->createGameEngine($testCase);
 
         $game = $gameEngine->getGame();
 
         $this->assertInstanceOf(AbstractGame::class, $game);
 
-        $this->assertInstanceOf(PlayableInterface::class, $gameEngine);
+        $this->assertInstanceOf(GameEngineInterface::class, $gameEngine);
 
-        $this->assertEquals($testCase['name'], $game->getName());
-        $this->assertEquals($testCase['symbols'], $game->getSymbols());
-        $this->assertEquals($testCase['matrix'], $game->getMatrix());
-        $this->assertEquals($testCase['bets'], $game->getBets());
+        $this->assertEquals($testCase['game']['name'], $game->getName());
+        $this->assertEquals($testCase['game']['symbols'], $game->getSymbols());
+        $this->assertEquals($testCase['game']['matrix'], $game->getMatrix());
+        $this->assertEquals($testCase['game']['bets'], $game->getBets());
     }
 
     /**
@@ -63,32 +67,42 @@ class GameEngineTest extends TestCase
     {
         yield [
             [
-                'name' => 'Game1',
-                'symbols' => [
-                    [
-                        'id' => 1,
-                        'image' => 'pathtographic',
-                        'rate' => 3
-                    ],
-                    [
-                        'id' => 2,
-                        'image' => 'pathtographic',
-                        'rate' => 3
-                    ],
-                    [
-                        'id' => 3,
-                        'image' => 'pathtographic',
-                        'rate' => 3
-                    ]
-                ],
-                'matrix' => [
-                    [-1, -1, -1],
-                    [-1, -1, -1],
-                    [-1, -1, -1],
-                ],
-                'bets' => [
-                    1, 5, 10, 50, 100
-                ]
+               'game' => [
+                   'name' => 'Game1',
+                   'type' => 0,
+                   'symbols' => [
+                       [
+                           'id' => 1,
+                           'image' => 'pathtographic',
+                           'rate' => 3
+                       ],
+                       [
+                           'id' => 2,
+                           'image' => 'pathtographic',
+                           'rate' => 3
+                       ],
+                       [
+                           'id' => 3,
+                           'image' => 'pathtographic',
+                           'rate' => 3
+                       ]
+                   ],
+                   'payouts' => [
+                       [
+                           [0, 0],
+                           [0, 1],
+                           [0, 2]
+                       ]
+                   ],
+                   'matrix' => [
+                       [-1, -1, -1],
+                       [-1, -1, -1],
+                       [-1, -1, -1],
+                   ],
+                   'bets' => [
+                       1, 5, 10, 50, 100
+                   ]
+               ]
             ]
         ];
     }
@@ -96,55 +110,47 @@ class GameEngineTest extends TestCase
     /**
      * Test simulating play action on the GameEngine.
      *
+     * @dataProvider dataProviderCheckWins
      * @param array $testCase
      */
     public function testPlay(array $testCase)
     {
         $gameEngine = $this->createGameEngine(
-            $testCase['config']
+            $testCase
         );
 
-        $gameRound = $gameEngine->play($testCase['play']);
+        $gameRound = $gameEngine->play($testCase);
 
-        $this->assertInstanceOf(AbstractGameRound::class, $gameRound);
-
+        $this->assertInstanceOf(GameRound::class, $gameRound);
         $this->assertContains($gameRound->getBet(), $gameEngine->getGame()->getBets());
-
-        $this->assertEquals(true, $gameRound->isEnded());
-
+        $this->assertEquals(false, $gameRound->isEnded());
         $this->assertEquals(
-            true,
-            $this->logicalOr(
-                $this->assertEquals(GameRound::STATUS_WON, $gameRound->getStatus()),
-                $this->assertEquals(GameRound::STATUS_LOST, $gameRound->getStatus())
-            )
+            GameRound::STATUS_DRAWN,
+            $gameRound->getStatus()
         );
 
-        $this->assertEquals(
-            false,
-            $gameRound->isSaved()
-        );
+        $gameEngine->sumUp($gameRound);
     }
 
-    /**
-     * The method checks if the game is successful and if the GameRound status is correct.
-     * @dataProvider dataProviderCreate
-     * @param array $testCase
-     */
-    public function testCheckWins(array $testCase)
-    {
-        $gameEngine = $this->createGameEngine(
-            $testCase['game']
-        );
-
-        $gameRound = $gameEngine->play($testCase['play']);
-
-        $this->assertEquals($testCase['play']['status'], $gameRound->getStatus());
-
-        if ($testCase['play']['status']) {
-            $this->assertEquals($testCase['play']['amount'], $gameRound()->getWinAmount());
-        }
-    }
+//    /**
+//     * The method checks if the game is successful and if the GameRound status is correct.
+//     * @dataProvider dataProviderCheckWins
+//     * @param array $testCase
+//     */
+//    public function testCheckWins(array $testCase)
+//    {
+//        $gameEngine = $this->createGameEngine(
+//            $testCase
+//        );
+//
+//        $gameRound = $gameEngine->play($testCase);
+//
+//        $this->assertEquals($testCase['play']['status'], $gameRound->getStatus());
+//
+//        if (GameRound::STATUS_WON === $testCase['play']['status']) {
+//            $this->assertEquals($testCase['play']['amount'], $gameRound->getWinAmount());
+//        }
+//    }
 
     /**
      * Data provider for testCheckWins.
@@ -157,6 +163,7 @@ class GameEngineTest extends TestCase
             [
                 'game' => [
                     'name' => 'Game1',
+                    'type' => 0,
                     'symbols' => [
                         [
                             'id' => 1,
@@ -220,7 +227,23 @@ class GameEngineTest extends TestCase
     private function createGameEngine(array $testCase)
     {
         return new GameEngine(
-            $testCase
+            $this->createGame($testCase['game'])
+        );
+    }
+
+    /**
+     * @param array $testCase
+     * @return SlotsGame
+     */
+    private function createGame(array $testCase)
+    {
+        return new SlotsGame(
+            $testCase['name'],
+            $testCase['type'],
+            $testCase['matrix'],
+            $testCase['symbols'],
+            $testCase['payouts'],
+            $testCase['bets']
         );
     }
 }
