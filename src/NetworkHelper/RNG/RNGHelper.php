@@ -12,8 +12,10 @@
 
 namespace App\NetworkHelper\RNG;
 
-use App\Model\DTO\NetworkRequestInterface;
-use App\Model\DTO\NetworkResponse;
+use App\Model\DTO\GeneratorConfig;
+use App\Model\DTO\Network\NetworkRequest;
+use App\Model\DTO\Network\NetworkRequestInterface;
+use App\Model\DTO\Network\NetworkResponseInterface;
 use App\NetworkHelper\AbstractNetworkHelper;
 
 /**
@@ -25,11 +27,15 @@ use App\NetworkHelper\AbstractNetworkHelper;
  */
 class RNGHelper extends AbstractNetworkHelper
 {
+    /** @var GeneratorConfig $generatorConfig */
+    private $generatorConfig;
+
     /**
      * RNGHelper constructor.
      */
-    public function __construct()
+    public function __construct(GeneratorConfig $generatorConfig)
     {
+        $this->generatorConfig = $generatorConfig;
         parent::__construct(
             'loterioma_rng_helper',
             'http://loterioma_rng',
@@ -39,11 +45,17 @@ class RNGHelper extends AbstractNetworkHelper
 
     /**
      * Method returns
-     * @param NetworkRequestInterface $networkRequest
-     * @return NetworkResponse
+     * @return NetworkResponseInterface
      */
-    public function random(NetworkRequestInterface $networkRequest): NetworkResponse
+    public function random(): NetworkResponseInterface
     {
-        return $this->makeGetRequest($networkRequest->getEndpoint(), $networkRequest->getRequestParams());
+        $networkRequest = new NetworkRequest(
+            '/index.php/generate',
+            'POST',
+            'asdasd',
+            $this->generatorConfig->normalizeBody()
+        );
+
+        return $this->makeRequest($networkRequest);
     }
 }

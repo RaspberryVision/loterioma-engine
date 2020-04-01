@@ -10,7 +10,7 @@
  * @copyright  03.2020 Raspberry Vision
  */
 
-namespace App\Model\DTO;
+namespace App\Model\DTO\Network;
 
 class NetworkRequest implements NetworkRequestInterface
 {
@@ -20,7 +20,12 @@ class NetworkRequest implements NetworkRequestInterface
     private $endpoint;
 
     /**
-     * @var array|string
+     * @var string
+     */
+    private $method;
+
+    /**
+     * @var array
      */
     private $body;
 
@@ -32,12 +37,14 @@ class NetworkRequest implements NetworkRequestInterface
     /**
      * NetworkRequest constructor.
      * @param string $endpoint
+     * @param string $method
      * @param string $componentHash
      * @param array|string $body
      */
-    public function __construct(string $endpoint, string $componentHash, $body)
+    public function __construct(string $endpoint, string $method, string $componentHash, $body)
     {
         $this->endpoint = $endpoint;
+        $this->method = $method;
         $this->componentHash = $componentHash;
         $this->body = $body;
     }
@@ -47,14 +54,9 @@ class NetworkRequest implements NetworkRequestInterface
      *
      * @return array
      */
-    public function getRequestParams()
+    public function getRequestParams(): array
     {
-        return [
-            'hash' => $this->componentHash,
-            'time' => date('Y-m-d H:i:s'),
-            'requestHash' => uniqid('eng_rng_', true),
-            'body' => $this->normalizeBody($this->body)
-        ];
+        return $this->body;
     }
 
     /**
@@ -70,11 +72,16 @@ class NetworkRequest implements NetworkRequestInterface
      */
     public function getComponentHash(): string
     {
-        return $this->componentHash();
+        return $this->componentHash;
     }
 
-    public function normalizeBody(NormalizableBodyInterface $body)
+    /**
+     * Get the method to be followed by the request.
+     *
+     * @return string
+     */
+    public function getMethod(): string
     {
-        return $body->normalizeBody();
+        return $this->method;
     }
 }

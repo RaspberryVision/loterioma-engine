@@ -14,7 +14,6 @@ namespace App\Model\Round;
 
 use App\Model\Bet\DiceBet;
 use App\Model\Game\GameInterface;
-use App\Model\ResultState\AbstractResultState;
 use App\Model\ResultState\DiceResultState;
 use App\Model\ResultState\ResultStateInterface;
 
@@ -97,6 +96,5 @@ class DiceRound extends AbstractRound
             'matched' => $this->getResult()->printMatched()
         ]);
     }
-
 
 }

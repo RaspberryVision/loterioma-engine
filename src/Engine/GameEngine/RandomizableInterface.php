@@ -17,7 +17,14 @@ use App\Model\DTO\GeneratorConfig;
 
 interface RandomizableInterface
 {
-    function random(): array;
+    public function random(): array;
 
-    function createGeneratorConfig(): GeneratorConfig;
+    public function createGeneratorConfig(
+        int $min,
+        int $max,
+        array $format,
+        int $seed = 0,
+        int $mode = 0,
+        array $devOptions = []
+    ): GeneratorConfig;
 }
