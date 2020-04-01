@@ -13,6 +13,10 @@
 
 namespace App\NetworkHelper;
 
+use App\Model\DTO\NetworkRequestInterface;
+use App\Model\DTO\NetworkResponse;
+use PHPUnit\Exception;
+
 abstract class AbstractNetworkHelper
 {
     /** @var string $name */
@@ -64,26 +68,52 @@ abstract class AbstractNetworkHelper
     /**
      * Method call API request to NetworkComponent.
      *
-     * @param string $method
-     * @param string $url
-     * @param array $data
+     * @param string $endpoint
+     * @param array $requestParams
+     * @return NetworkResponse
+     */
+    protected function makeGetRequest(string $endpoint, array $requestParams)
+    {
+        $curlResponse = $this->makeCurl(
+            $endpoint,
+            json_encode($requestParams)
+        );
+
+        return $this->createResponse($curlResponse);
+    }
+
+    /**
+     * @param string $endpoint
+     * @param string $parameters
      * @return mixed
      */
-    protected function makeRequest(string $method, string $url, array $data = [])
+    private function makeCurl(string $endpoint, string $parameters)
     {
         $curl = curl_init();
 
-        curl_setopt_array($curl, [
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $this->getRequestUrl($url),
-            CURLOPT_POST => 1,
-            CURLOPT_POSTFIELDS => json_encode($data)
-        ]);
+        curl_setopt_array(
+            $curl,
+            [
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_URL => $this->getRequestUrl($endpoint),
+                CURLOPT_POST => 1,
+                CURLOPT_POSTFIELDS => $parameters,
+            ]
+        );
 
-        $output = curl_exec($curl);
+        $jsonResponse = curl_exec($curl);
         curl_close($curl);
 
-        return $output;
+        return $jsonResponse;
+    }
+
+    /**
+     * @param string $json
+     * @return NetworkResponse
+     */
+    protected function createResponse(string $json)
+    {
+        return new NetworkResponse($json, 200, 'sadsad');
     }
 
     /**
@@ -94,7 +124,8 @@ abstract class AbstractNetworkHelper
      */
     private function getRequestUrl(string $endpoint)
     {
-        return sprintf("%s:%d%s",
+        return sprintf(
+            "%s:%d%s",
             $this->url,
             $this->port,
             $endpoint

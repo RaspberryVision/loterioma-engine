@@ -11,14 +11,16 @@
  * @copyright  03.2020 Raspberry Vision
  */
 
-namespace App\Tests\Engine;
+namespace App\Tests\Engine\SlotsEngine;
 
-use App\Engine\GameEngine;
-use App\Engine\GameEngineInterface;
-use App\Engine\PlayableInterface;
-use App\Model\AbstractGame;
-use App\Model\GameRound;
-use App\Model\SlotsGame;
+use App\Engine\GameEngine\FlushableInterface;
+use App\Engine\GameEngine\WinnableInterface;
+use App\Engine\GameEngine\PlayableInterface;
+use App\Engine\SlotsEngine\SlotsEngine;
+use App\Model\Game\GameInterface;
+use App\Model\Game\SlotsGame;
+use App\Model\Round\AbstractRound;
+use App\Model\Round\RoundInterface;
 use PHPUnit\Framework\TestCase;
 
 class GameEngineTest extends TestCase
@@ -29,11 +31,13 @@ class GameEngineTest extends TestCase
      * @dataProvider dataProviderCreate
      * @param array $testCase
      */
-    public function testDoesImplementGameableInterface(array $testCase)
+    public function testDoesImplementInterfaces(array $testCase)
     {
         $gameEngine = $this->createGameEngine($testCase);
 
-        $this->assertInstanceOf(GameEngineInterface::class, $gameEngine);
+        $this->assertInstanceOf(PlayableInterface::class, $gameEngine);
+        $this->assertInstanceOf(FlushableInterface::class, $gameEngine);
+        $this->assertInstanceOf(WinnableInterface::class, $gameEngine);
     }
 
     /**
@@ -48,10 +52,7 @@ class GameEngineTest extends TestCase
 
         $game = $gameEngine->getGame();
 
-        $this->assertInstanceOf(AbstractGame::class, $game);
-
-        $this->assertInstanceOf(GameEngineInterface::class, $gameEngine);
-
+        $this->assertInstanceOf(GameInterface::class, $game);
         $this->assertEquals($testCase['game']['name'], $game->getName());
         $this->assertEquals($testCase['game']['symbols'], $game->getSymbols());
         $this->assertEquals($testCase['game']['matrix'], $game->getMatrix());
@@ -87,7 +88,7 @@ class GameEngineTest extends TestCase
                            'rate' => 3
                        ]
                    ],
-                   'payouts' => [
+                   'combinations' => [
                        [
                            [0, 0],
                            [0, 1],
@@ -110,7 +111,7 @@ class GameEngineTest extends TestCase
     /**
      * Test simulating play action on the GameEngine.
      *
-     * @dataProvider dataProviderCheckWins
+     * @dataProvider dataProviderPlay
      * @param array $testCase
      */
     public function testPlay(array $testCase)
@@ -121,43 +122,23 @@ class GameEngineTest extends TestCase
 
         $gameRound = $gameEngine->play($testCase);
 
-        $this->assertInstanceOf(GameRound::class, $gameRound);
+        $this->assertInstanceOf(RoundInterface::class, $gameRound);
         $this->assertContains($gameRound->getBet(), $gameEngine->getGame()->getBets());
         $this->assertEquals(false, $gameRound->isEnded());
         $this->assertEquals(
-            GameRound::STATUS_DRAWN,
+            AbstractRound::STATUS_DRAWN,
             $gameRound->getStatus()
         );
 
         $gameEngine->sumUp($gameRound);
     }
 
-//    /**
-//     * The method checks if the game is successful and if the GameRound status is correct.
-//     * @dataProvider dataProviderCheckWins
-//     * @param array $testCase
-//     */
-//    public function testCheckWins(array $testCase)
-//    {
-//        $gameEngine = $this->createGameEngine(
-//            $testCase
-//        );
-//
-//        $gameRound = $gameEngine->play($testCase);
-//
-//        $this->assertEquals($testCase['play']['status'], $gameRound->getStatus());
-//
-//        if (GameRound::STATUS_WON === $testCase['play']['status']) {
-//            $this->assertEquals($testCase['play']['amount'], $gameRound->getWinAmount());
-//        }
-//    }
-
     /**
-     * Data provider for testCheckWins.
+     * Data provider for testPlay.
      *
      * @return \Generator
      */
-    public function dataProviderCheckWins()
+    public function dataProviderPlay()
     {
         yield [
             [
@@ -195,7 +176,7 @@ class GameEngineTest extends TestCase
                     'bets' => [
                         1, 5, 10, 50, 100
                     ],
-                    'payouts' => [
+                    'combinations' => [
                         [
                             [0, 0],
                             [0, 1],
@@ -210,7 +191,7 @@ class GameEngineTest extends TestCase
                         [1, 3, 2],
                         [3, 1, 4],
                     ],
-                    'status' => GameRound::STATUS_WON,
+                    'status' => AbstractRound::STATUS_WON,
                     'amount' => 45
                 ]
             ]
@@ -222,11 +203,11 @@ class GameEngineTest extends TestCase
      * params and return it to test.
      *
      * @param array $testCase
-     * @return GameEngine
+     * @return SlotsEngine
      */
     private function createGameEngine(array $testCase)
     {
-        return new GameEngine(
+        return new SlotsEngine(
             $this->createGame($testCase['game'])
         );
     }

@@ -3,7 +3,7 @@
 ###< idea ###
 
 ###> phpqa logs ###
-.docker/qa-results
+.docker/phpqa/results
 ###< phpqa logs ###
 
 ###> symfony/framework-bundle ###

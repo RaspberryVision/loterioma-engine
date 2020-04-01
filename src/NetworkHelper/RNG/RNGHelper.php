@@ -12,8 +12,17 @@
 
 namespace App\NetworkHelper\RNG;
 
+use App\Model\DTO\NetworkRequestInterface;
+use App\Model\DTO\NetworkResponse;
 use App\NetworkHelper\AbstractNetworkHelper;
 
+/**
+ * Helper providing communication with a random number generator.
+ * @category   NetworkHelper
+ * @package    App\NetworkHelper\RNG
+ * @author     Rafal Malik <rafalmalik.info@gmail.com>
+ * @copyright  03.2020 Raspberry Vision
+ */
 class RNGHelper extends AbstractNetworkHelper
 {
     /**
@@ -22,26 +31,19 @@ class RNGHelper extends AbstractNetworkHelper
     public function __construct()
     {
         parent::__construct(
-            "loterioma_rng_helper",
-            "http://loterioma_rng",
+            'loterioma_rng_helper',
+            'http://loterioma_rng',
             80
         );
     }
 
     /**
      * Method returns
-     * @param array $options
-     * @return mixed
+     * @param NetworkRequestInterface $networkRequest
+     * @return NetworkResponse
      */
-    public function random(array $options)
+    public function random(NetworkRequestInterface $networkRequest): NetworkResponse
     {
-        return json_decode($this->makeRequest("GET", "/index.php/generate", [
-            'seed' => $options['seed'] ?? 0,
-            'range' => [
-                'min' => 1,
-                'max' => count($options['game']['symbols'])
-            ],
-            'matrix' => $options['play']['resultMatrix'] ?? $options['game']['matrix']
-        ]));
+        return $this->makeGetRequest($networkRequest->getEndpoint(), $networkRequest->getRequestParams());
     }
 }
