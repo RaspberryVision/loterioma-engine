@@ -10,19 +10,12 @@
  * @copyright  03.2020 Raspberry Vision
  */
 
-namespace App\Model\DTO;
+namespace App\Model\DTO\Network;
 
-use PHPUnit\Exception;
-
-class NetworkResponse
+class NetworkResponse implements NetworkResponseInterface
 {
-    const ERR_INVALID_JSON = [
-        "message" => "Invalid body json.",
-        "statusCode" => 500,
-    ];
-
     /**
-     * @var array|string
+     * @var array|null
      */
     private $body;
 
@@ -38,11 +31,11 @@ class NetworkResponse
 
     /**
      * RNGResponse constructor.
-     * @param array|string $body
+     * @param string|null $body
      * @param int $statusCode
      * @param string $requestHash
      */
-    public function __construct($body, int $statusCode, string $requestHash)
+    public function __construct(?string $body, int $statusCode, string $requestHash)
     {
         $this->body = json_decode($body, true);
         $this->statusCode = $statusCode;
@@ -50,9 +43,9 @@ class NetworkResponse
     }
 
     /**
-     * @return array|string
+     * @return array|null
      */
-    public function getBody()
+    public function getBody(): ?array
     {
         return $this->body;
     }
