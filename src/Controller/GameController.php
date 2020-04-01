@@ -54,6 +54,8 @@ abstract class GameController extends AbstractController
             throw new \LogicException('We got problem with determine game mode.');
         }
 
+        $engine->flush($gameRound);
+
         return $this->json(
             [
                 'body' => $gameRound->printInfo(),
