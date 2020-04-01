@@ -24,6 +24,7 @@ use App\Model\DTO\NetworkRequestInterface;
 use App\Model\Game\GameInterface;
 use App\Model\Round\AbstractRound;
 use App\Model\Round\RoundInterface;
+use App\NetworkHelper\Core\CoreHelper;
 use App\NetworkHelper\RNG\RNGHelper;
 
 /**
@@ -56,6 +57,11 @@ abstract class AbstractGameEngine implements
     protected RNGHelper $RNGHelper;
 
     /**
+     * @var CoreHelper $coreHelper
+     */
+    protected CoreHelper $coreHelper;
+
+    /**
      * @var NetworkRequestInterface $requestOptions
      */
     protected $requestOptions;
@@ -73,6 +79,7 @@ abstract class AbstractGameEngine implements
     public function __construct(GameInterface $game, WinningHelperInterface $winningHelper)
     {
         $this->RNGHelper = new RNGHelper();
+        $this->coreHelper = new CoreHelper();
         $this->winningHelper = $winningHelper;
         $this->game = $game;
         $this->componentHash = uniqid('', true);
