@@ -83,11 +83,13 @@ class DiceEngine extends AbstractGameEngine
      */
     public function flush(RoundInterface $gameRound)
     {
-        $this->coreHelper->processRound(new NetworkRequest(
-            '/index.php/generate',
+        $response = $this->coreHelper->processRound(new NetworkRequest(
+            '/index.php/rounds',
             $this->componentHash,
             $gameRound
         ));
+
+        var_dump($response);
     }
 
     /**

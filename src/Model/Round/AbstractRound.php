@@ -12,6 +12,7 @@
 
 namespace App\Model\Round;
 
+use App\Model\DTO\NormalizableBodyInterface;
 use App\Model\Game\GameInterface;
 use App\Model\ResultState\AbstractResultState;
 use App\Model\ResultState\ResultStateInterface;
@@ -23,7 +24,7 @@ use App\Model\ResultState\ResultStateInterface;
  * @author     Rafal Malik <rafalmalik.info@gmail.com>
  * @copyright  03.2020 Raspberry Vision
  */
-abstract class AbstractRound implements RoundInterface
+abstract class AbstractRound implements RoundInterface, NormalizableBodyInterface
 {
     public const STATUS_DRAWN = 0;
     public const STATUS_LOST = 1;
@@ -143,5 +144,10 @@ abstract class AbstractRound implements RoundInterface
             'balance' => $this->balance,
             'bet' => $this->bet,
         ];
+    }
+
+    public function normalizeBody()
+    {
+        return $this->printInfo();
     }
 }
