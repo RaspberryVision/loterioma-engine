@@ -19,8 +19,8 @@ use App\Engine\Helpers\SlotsWinningHelper;
 use App\Engine\Helpers\WinningHelperInterface;
 use App\Engine\SlotsEngine\SlotsEngine;
 use App\Model\DTO\GeneratorConfig;
-use App\Model\DTO\NetworkRequest;
-use App\Model\DTO\NetworkRequestInterface;
+use App\Model\DTO\Network\NetworkRequest;
+use App\Model\DTO\Network\NetworkRequestInterface;
 use App\Model\Game\GameInterface;
 use App\Model\Round\AbstractRound;
 use App\Model\Round\RoundInterface;
@@ -62,11 +62,6 @@ abstract class AbstractGameEngine implements
     protected CoreHelper $coreHelper;
 
     /**
-     * @var NetworkRequestInterface $requestOptions
-     */
-    protected $requestOptions;
-
-    /**
      * @var WinningHelperInterface $winningHelper
      */
     protected WinningHelperInterface $winningHelper;
@@ -74,20 +69,16 @@ abstract class AbstractGameEngine implements
     /**
      * GameEngine constructor.
      * @param GameInterface $game
+     * @param GeneratorConfig $generatorConfig
      * @param WinningHelperInterface $winningHelper
      */
-    public function __construct(GameInterface $game, WinningHelperInterface $winningHelper)
+    public function __construct(GameInterface $game, GeneratorConfig $generatorConfig, $winningHelper)
     {
-        $this->RNGHelper = new RNGHelper();
+        $this->RNGHelper = new RNGHelper($generatorConfig);
         $this->coreHelper = new CoreHelper();
         $this->winningHelper = $winningHelper;
         $this->game = $game;
         $this->componentHash = uniqid('', true);
-        $this->requestOptions = new NetworkRequest(
-            '/index.php/generate',
-            $this->componentHash,
-            $this->createGeneratorConfig()
-        );
     }
 
     /**
@@ -118,14 +109,25 @@ abstract class AbstractGameEngine implements
 
     /**
      * Create GeneratorConfig object based on loaded $game.
+     * @param int $min
+     * @param int $max
+     * @param array $format
+     * @param int $seed
+     * @param int $mode
+     * @param array $devOptions
      * @return GeneratorConfig
      */
-    public function createGeneratorConfig(): GeneratorConfig
+    public function createGeneratorConfig(int $min,
+        int $max,
+        array $format,
+        int $seed = 0,
+        int $mode = 0,
+        array $devOptions = []): GeneratorConfig
     {
         return new GeneratorConfig(
-            $this->game->getMin(),
-            $this->game->getMax(),
-            $this->game->getFormat()
+            $min,
+            $max,
+            $format
         );
     }
 }

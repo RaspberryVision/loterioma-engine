@@ -21,14 +21,13 @@ namespace App\Engine\Dice;
 
 use App\Engine\GameEngine\AbstractGameEngine;
 use App\Engine\Helpers\DiceWinningHelper;
-use App\Engine\Helpers\WinningHelperInterface;
-use App\Model\DTO\NetworkRequest;
+use App\Model\DTO\GeneratorConfig;
+use App\Model\DTO\Network\NetworkRequest;
 use App\Model\Game\DiceGame;
 use App\Model\ResultState\DiceResultState;
 use App\Model\Round\AbstractRound;
 use App\Model\Round\DiceRound;
 use App\Model\Round\RoundInterface;
-use App\Model\Round\SlotsRound;
 
 /**
  * Implementation of the cube game engine using a random number generator.
@@ -45,7 +44,7 @@ class DiceEngine extends AbstractGameEngine
      */
     public function __construct(DiceGame $game)
     {
-        parent::__construct($game, new DiceWinningHelper());
+        parent::__construct($game, $this->createGeneratorConfig(1, 6, [[-1]]), new DiceWinningHelper());
     }
 
     /**
@@ -58,7 +57,7 @@ class DiceEngine extends AbstractGameEngine
         $gameRound = new DiceRound(
             $this->game,
             $bet,
-            new DiceResultState($this->RNGHelper->random($this->requestOptions)),
+            new DiceResultState($this->RNGHelper->random()),
             $params
         );
 
@@ -84,12 +83,11 @@ class DiceEngine extends AbstractGameEngine
     public function flush(RoundInterface $gameRound)
     {
         $response = $this->coreHelper->processRound(new NetworkRequest(
-            '/index.php/rounds',
+            '/index.php/game/',
+            'POST',
             $this->componentHash,
-            $gameRound
+            []
         ));
-
-        var_dump($response);
     }
 
     /**
@@ -99,17 +97,7 @@ class DiceEngine extends AbstractGameEngine
      */
     public function simulate(RoundInterface $gameRound): bool
     {
-        $gameRound2 = new DiceRound(
-            $this->game,
-            $bet,
-            new DiceResultState($this->RNGHelper->random($this->requestOptions)),
-            $params['bets']
-        );
 
-        $this->winning($gameRound);
-        $this->flush($gameRound);
-
-        return $gameRound;
     }
 
     public function random(): array
