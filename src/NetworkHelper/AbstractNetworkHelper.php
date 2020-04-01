@@ -94,10 +94,8 @@ abstract class AbstractNetworkHelper
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($networkRequest->getRequestParams()));
         }
 
-
-
         $response = curl_exec($ch);
-``
+
         if (!$response) {
             return $this->createResponse(json_encode([
                 'message' => curl_error($ch),
