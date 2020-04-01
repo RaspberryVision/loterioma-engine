@@ -12,10 +12,10 @@ services:
         volumes:
           - .:/var/www/html
         networks:
-          - proxynet
+          - my-proxy-net
 
     loterioma_engine_qa:
-        image: raspberryvision/phpqa:0.1.2-stretch
+        build: .docker/phpqa
         container_name: loterioma_engine_qa
         stdin_open: true
         tty: true
@@ -24,10 +24,17 @@ services:
           - PHPQA_CODE_DIR=${PHPQA_HOME_DIR}/code
           - PHPQA_LOGS_DIR=${PHPQA_HOME_DIR}/logs
           - PHPQA_TEST_DIR=${PHPQA_HOME_DIR}/code
+          - PHPQA_ENGINEER_HOST=loterioma_engineer
+          - PHPQA_ENGINEER_PORT=80
+          - PHPQA_MACHINE_NAME=dev-local-rm
+          - PHPQA_COMPONENT_NAME=engine
         volumes:
           - ./src:/code
-          - ./.docker/qa-results:/logs
+          - ./.docker/phpqa/results:/phpqa/logs
+        networks:
+          - my-proxy-net
 
 networks:
-    proxynet:
+    my-proxy-net:
+        external: true
         name: loterioma-net
