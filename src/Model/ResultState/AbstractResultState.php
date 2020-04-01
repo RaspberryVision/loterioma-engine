@@ -2,8 +2,8 @@
 
 namespace App\Model\ResultState;
 
-use App\Model\DTO\NetworkResponse;
 use App\Model\Combination\CombinationInterface;
+use App\Model\DTO\Network\NetworkResponseInterface;
 use App\Model\GameResultMatrix\AbstractGameResultMatrix;
 use App\Model\GameResultMatrix\SlotsResultMatrix;
 
@@ -16,17 +16,17 @@ use App\Model\GameResultMatrix\SlotsResultMatrix;
  */
 abstract class AbstractResultState implements ResultStateInterface
 {
-    /** @var array $matrix */
-    protected array $matrix;
+    /** @var array|null $matrix */
+    protected ?array $matrix;
 
     /** @var array $matched */
     protected array $matched;
 
     /**
      * AbstractGameResult constructor.
-     * @param NetworkResponse $networkResponse
+     * @param NetworkResponseInterface $networkResponse
      */
-    public function __construct(NetworkResponse $networkResponse)
+    public function __construct(NetworkResponseInterface $networkResponse)
     {
         $this->matrix = $networkResponse->getBody();
         $this->matched = [];

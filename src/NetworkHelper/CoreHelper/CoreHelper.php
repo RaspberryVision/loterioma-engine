@@ -13,8 +13,8 @@
 
 namespace App\NetworkHelper\Core;
 
-use App\Model\DTO\NetworkRequestInterface;
-use App\Model\DTO\NetworkResponse;
+use App\Model\DTO\Network\NetworkRequestInterface;
+use App\Model\DTO\Network\NetworkResponseInterface;
 use App\NetworkHelper\AbstractNetworkHelper;
 
 /**
@@ -41,10 +41,10 @@ class CoreHelper extends AbstractNetworkHelper
     /**
      * Method returns
      * @param NetworkRequestInterface $networkRequest
-     * @return NetworkResponse
+     * @return NetworkResponseInterface
      */
-    public function processRound(NetworkRequestInterface $networkRequest): NetworkResponse
+    public function processRound(NetworkRequestInterface $networkRequest): NetworkResponseInterface
     {
-        return $this->makeGetRequest($networkRequest->getEndpoint(), $networkRequest->getRequestParams());
+        return $this->makeRequest($networkRequest);
     }
 }
