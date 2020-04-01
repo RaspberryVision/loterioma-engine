@@ -22,6 +22,7 @@ namespace App\Engine\Dice;
 use App\Engine\GameEngine\AbstractGameEngine;
 use App\Engine\Helpers\DiceWinningHelper;
 use App\Engine\Helpers\WinningHelperInterface;
+use App\Model\DTO\NetworkRequest;
 use App\Model\Game\DiceGame;
 use App\Model\ResultState\DiceResultState;
 use App\Model\Round\AbstractRound;
@@ -82,7 +83,11 @@ class DiceEngine extends AbstractGameEngine
      */
     public function flush(RoundInterface $gameRound)
     {
-        // TODO: Implement flush() method.
+        $this->coreHelper->processRound(new NetworkRequest(
+            '/index.php/generate',
+            $this->componentHash,
+            $gameRound
+        ));
     }
 
     /**
