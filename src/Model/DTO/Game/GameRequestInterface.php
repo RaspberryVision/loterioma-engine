@@ -24,11 +24,37 @@ namespace App\Model\DTO\Game;
  */
 interface GameRequestInterface
 {
-    public function getGameHash(): string;
+    /**
+     *
+     * @return int
+     * @todo Short description
+     */
+    public function getGameId(): int;
 
+    /**
+     * Get info about connection client (webapp, mobile or whatever)
+     * @return string
+     * @todo Short description
+     */
     public function getClient(): string;
 
-    public function getUserHash(): string;
+    /**
+     *
+     * @return int
+     * @todo Short description
+     */
+    public function getUserId(): int;
 
+    /**
+     * @return int
+     * @todo Short description
+     */
     public function getMode(): int;
+
+    /**
+     * Parameters for specific round, for example player bets or bet amount.
+     * @return array
+     * @todo Short description
+     */
+    public function getParameters(): array;
 }

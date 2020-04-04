@@ -21,6 +21,7 @@ namespace App\Engine\Dice;
 
 use App\Engine\GameEngine\AbstractGameEngine;
 use App\Engine\Helpers\DiceWinningHelper;
+use App\Model\DTO\Game\GameRequestInterface;
 use App\Model\DTO\GeneratorConfig;
 use App\Model\DTO\Network\NetworkRequest;
 use App\Model\Game\DiceGame;
@@ -49,16 +50,15 @@ class DiceEngine extends AbstractGameEngine
 
     /**
      * @param int $bet
-     * @param array $params
+     * @param GameRequestInterface $gameRequest
      * @return DiceRound
      */
-    public function play(int $bet, array $params = []): DiceRound
+    public function play(GameRequestInterface $gameRequest): DiceRound
     {
         $gameRound = new DiceRound(
             $this->game,
-            $bet,
             new DiceResultState($this->RNGHelper->random()),
-            $params
+            $gameRequest->getParameters()['bets']
         );
 
         $this->winning($gameRound);

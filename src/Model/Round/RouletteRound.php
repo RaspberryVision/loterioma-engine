@@ -73,9 +73,9 @@ class RouletteRound extends AbstractRound
     {
         foreach ($bets as $bet) {
             $this->bets [] = new RouletteBet(
-                sprintf('Bet for number %d stake %d', $bet['number'], $bet['rate']),
+                sprintf('Bet for number %d stake %d', $bet['number'], $bet['stake']),
                 0,
-                $bet['rate'],
+                $bet['stake'],
                 $bet['number']
             );
         }

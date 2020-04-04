@@ -47,13 +47,12 @@ class DiceGame extends AbstractGame
      */
     public function __construct(
         string $name,
-        int $type,
         int $min,
         int $max,
         array $format,
         array $rates
     )
     {
-        parent::__construct($name, $type, $min, $max, $format, $rates);
+        parent::__construct($name, $this::GAME_TYPE, $min, $max, $format, $rates);
     }
 }

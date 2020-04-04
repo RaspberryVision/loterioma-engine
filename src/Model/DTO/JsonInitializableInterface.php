@@ -19,13 +19,10 @@
 
 namespace App\Model\DTO;
 
-use App\Model\DTO\Game\GameRequest;
-use App\Model\DTO\Game\GameRequestInterface;
-
 /**
- * @todo Short description
+ * An interface that specifies the class's ability to initialize its properties with json objects
  */
 interface JsonInitializableInterface
 {
-    public function setFromJson(GameRequestInterface $gameRequest, string $json);
+    public function setFromJson(string $jsonData);
 }
