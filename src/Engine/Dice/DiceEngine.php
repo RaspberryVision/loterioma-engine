@@ -45,7 +45,7 @@ class DiceEngine extends AbstractGameEngine
      */
     public function __construct(DiceGame $game)
     {
-        parent::__construct($game, $this->createGeneratorConfig(1, 6, [[-1]]), new DiceWinningHelper());
+        parent::__construct($game, new DiceWinningHelper());
     }
 
     /**

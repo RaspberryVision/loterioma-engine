@@ -8,15 +8,13 @@
 
 namespace App\Model\Game;
 
+use App\Model\DTO\Game\GeneratorConfig;
+
 interface GameInterface
 {
     public function getName(): string;
 
     public function getType(): int;
 
-    public function getMin(): int;
-
-    public function getMax(): int;
-
-    public function getFormat(): array;
+    public function getGeneratorConfig(): GeneratorConfig;
 }

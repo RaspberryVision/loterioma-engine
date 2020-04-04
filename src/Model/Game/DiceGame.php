@@ -37,22 +37,10 @@ class DiceGame extends AbstractGame
     private array $bets;
 
     /**
-     * DiceGame constructor.
-     * @param string $name
-     * @param int $type
-     * @param int $min
-     * @param int $max
-     * @param array $format
-     * @param array $rates
+     * @return DiceBet[]
      */
-    public function __construct(
-        string $name,
-        int $min,
-        int $max,
-        array $format,
-        array $rates
-    )
+    public function getBets(): array
     {
-        parent::__construct($name, $this::GAME_TYPE, $min, $max, $format, $rates);
+        return $this->bets;
     }
 }

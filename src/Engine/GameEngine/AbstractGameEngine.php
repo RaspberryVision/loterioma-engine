@@ -70,12 +70,11 @@ abstract class AbstractGameEngine implements
     /**
      * GameEngine constructor.
      * @param GameInterface $game
-     * @param GeneratorConfig $generatorConfig
      * @param WinningHelperInterface $winningHelper
      */
-    public function __construct(GameInterface $game, GeneratorConfig $generatorConfig, $winningHelper)
+    public function __construct(GameInterface $game, $winningHelper)
     {
-        $this->RNGHelper = new RNGHelper($generatorConfig);
+        $this->RNGHelper = new RNGHelper($game->getGeneratorConfig());
         $this->coreHelper = new CoreHelper();
         $this->winningHelper = $winningHelper;
         $this->game = $game;

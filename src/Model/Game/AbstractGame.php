@@ -14,6 +14,8 @@
 
 namespace App\Model\Game;
 
+use App\Model\DTO\Game\GeneratorConfig;
+
 /**
  * Abstract game model, provide basic properties and methods.
  * @category   Models
@@ -41,41 +43,12 @@ abstract class AbstractGame implements GameInterface
     protected int $type;
 
     /**
-     * @var int $min
+     * @var GeneratorConfig
      */
-    protected int $min;
-
-    /**
-     * @var int $max
-     */
-    protected int $max;
-
-    /**
-     * @var array $format
-     */
-    protected array $format;
+    private GeneratorConfig $generatorConfig;
 
     /** @var array $rates */
     private array $rates;
-
-    /**
-     * AbstractGame constructor.
-     * @param string $name
-     * @param int $type
-     * @param int $min
-     * @param int $max
-     * @param array $format
-     * @param array $rates
-     */
-    public function __construct(string $name, int $type, int $min, int $max, array $format, array $rates)
-    {
-        $this->name = $name;
-        $this->type = $type;
-        $this->min = $min;
-        $this->max = $max;
-        $this->format = $format;
-        $this->rates = $rates;
-    }
 
     /**
      * @return int
@@ -102,34 +75,42 @@ abstract class AbstractGame implements GameInterface
     }
 
     /**
-     * @return int
-     */
-    public function getMin(): int
-    {
-        return $this->min;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMax(): int
-    {
-        return $this->max;
-    }
-
-    /**
-     * @return array
-     */
-    public function getFormat(): array
-    {
-        return $this->format;
-    }
-
-    /**
      * @return array
      */
     public function getRates(): array
     {
         return $this->rates;
+    }
+
+    /**
+     * @return GeneratorConfig
+     */
+    public function getGeneratorConfig(): GeneratorConfig
+    {
+        return $this->generatorConfig;
+    }
+
+    /**
+     * @param array $config
+     * @return AbstractGame
+     */
+    public function setGeneratorConfig(array $config): AbstractGame
+    {
+        $this->generatorConfig = new GeneratorConfig(
+            $config['seed'],
+            $config['min'],
+            $config['max'],
+            $config['format']
+        );
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function __set($name, $value): void
+    {
+        $this->$name = $value;
     }
 }
