@@ -12,7 +12,7 @@
 
 namespace App\NetworkHelper\RNG;
 
-use App\Model\DTO\GeneratorConfig;
+use App\Model\DTO\Game\GeneratorConfig;
 use App\Model\DTO\Network\NetworkRequest;
 use App\Model\DTO\Network\NetworkRequestInterface;
 use App\Model\DTO\Network\NetworkResponseInterface;
@@ -35,12 +35,12 @@ class RNGHelper extends AbstractNetworkHelper
      */
     public function __construct(GeneratorConfig $generatorConfig)
     {
-        $this->generatorConfig = $generatorConfig;
         parent::__construct(
             'loterioma_rng_helper',
             'http://loterioma_rng',
             80
         );
+        $this->generatorConfig = $generatorConfig;
     }
 
     /**
@@ -53,7 +53,7 @@ class RNGHelper extends AbstractNetworkHelper
             '/index.php/generate',
             'POST',
             'asdasd',
-            $this->generatorConfig->normalizeBody()
+            $this->generatorConfig
         );
 
         return $this->makeRequest($networkRequest);

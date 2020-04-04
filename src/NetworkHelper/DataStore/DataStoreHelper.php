@@ -16,7 +16,11 @@ namespace App\NetworkHelper\DataStore;
 use App\Model\DTO\Network\NetworkRequest;
 use App\Model\DTO\Network\NetworkRequestInterface;
 use App\Model\DTO\Network\NetworkResponseInterface;
+use App\Model\Game\AbstractGame;
+use App\Model\Game\DiceGame;
+use App\Model\Game\GameInterface;
 use App\NetworkHelper\AbstractNetworkHelper;
+use App\NetworkHelper\ModelBuilder;
 
 /**
  * A class that provides access methods to casino action.
@@ -27,11 +31,15 @@ use App\NetworkHelper\AbstractNetworkHelper;
  */
 class DataStoreHelper extends AbstractNetworkHelper
 {
+    /** @var ModelBuilder $modelBuilder */
+    private $modelBuilder;
+
     /**
      * DataStoreHelper constructor.
      */
     public function __construct()
     {
+        $this->modelBuilder = new ModelBuilder();
         parent::__construct(
             'loterioma_datastore_helper',
             'http://api',
@@ -49,21 +57,43 @@ class DataStoreHelper extends AbstractNetworkHelper
         return $this->makeRequest($networkRequest);
     }
 
+//    /**
+//     * The method that sends a request to save the object of the created game.
+//     * !!! To play, you must still activate the game object.
+//     * @param int $id
+//     * @return NetworkResponseInterface
+//     */
+//    public function fetchGame(int $id): NetworkResponseInterface
+//    {
+//        return $this->makeRequest(
+//            new NetworkRequest(
+//                '/games/'.$id,
+//                'GET',
+//                'sadasdas',
+//                []
+//            )
+//        );
+//    }
+
     /**
      * The method that sends a request to save the object of the created game.
      * !!! To play, you must still activate the game object.
-     * @param int $id
-     * @return NetworkResponseInterface
+     * @param int|null $id
+     * @return DiceGame|null
      */
-    public function fetchGame(int $id): NetworkResponseInterface
+    public function fetchGame(int $id): ?GameInterface
     {
-        return $this->makeRequest(
-            new NetworkRequest(
-                '/games/'.$id,
-                'GET',
-                'sadasdas',
-                []
-            )
-        );
+        $response = $this->makeRequest(new NetworkRequest(
+            '/games/' . $id,
+            'GET',
+            'sadasdas',
+            []
+        ));
+
+        if ($response->getBody()) {
+            return $this->modelBuilder->convert(DiceGame::class, $response->getBody());
+        }
+
+        return null;
     }
 }

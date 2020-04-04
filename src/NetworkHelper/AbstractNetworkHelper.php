@@ -16,17 +16,26 @@ namespace App\NetworkHelper;
 use App\Model\DTO\Network\NetworkRequestInterface;
 use App\Model\DTO\Network\NetworkResponse;
 use App\Model\DTO\Network\NetworkResponseInterface;
+use JsonSerializable;
+use LogicException;
 
+/**
+ * @todo Short description
+ * @category   @todo Add category
+ * @package    App\NetworkHelper
+ * @author     Rafal Malik <rafalmalik.info@gmail.com>
+ * @copyright  04.2020 Raspberry Vision
+ */
 abstract class AbstractNetworkHelper
 {
     /** @var string $name */
-    protected $name;
+    protected string $name;
 
     /** @var string $url */
-    protected $url;
+    protected string $url;
 
     /** @var int $port */
-    protected $port;
+    protected int $port;
 
     /**
      * AbstractNetworkHelper constructor.
@@ -83,19 +92,22 @@ abstract class AbstractNetworkHelper
             'LM-COMP-HASH: ' . $networkRequest->getComponentHash(),
             'LM-TIME: ' .  date('Y-m-d H:i:s'),
             'LM-REQUEST-HASH: ' . uniqid('eng_rng_', true),
-            'Content-Type: application/ld+json'
+            'Content-Type: application/json'
         ]);
 
         if ('POST' === $networkRequest->getMethod()) {
             curl_setopt($ch, CURLOPT_POST, 1);
         }
 
-        if (count($networkRequest->getRequestParams()) > 0) {
+        if (is_array($networkRequest->getRequestParams()) || (is_object($networkRequest->getRequestParams()) && $networkRequest->getRequestParams() instanceof JsonSerializable)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($networkRequest->getRequestParams()));
+        } elseif (is_string($networkRequest->getRequestParams())) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $networkRequest->getRequestParams());
+        } elseif (null !== $networkRequest->getRequestParams()) {
+            throw new LogicException('Wrong format data');
         }
 
         $response = curl_exec($ch);
-
         if (!$response) {
             return $this->createResponse(json_encode([
                 'message' => curl_error($ch),
