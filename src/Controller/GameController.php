@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Engine\GameEngine\AbstractGameEngine;
 use App\Model\DTO\Game\GameRequestInterface;
 use App\Model\DTO\GamePlayRequest;
-use App\Model\Game\GameMode;
 use App\Model\Round\RoundInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,14 +22,13 @@ abstract class GameController extends AbstractController
      * Process the flow of the delivered game.
      * @param string $requestContent
      * @param AbstractGameEngine $engine
-     * @param array $gameParams
      * @return JsonResponse
      */
-    protected function process(string $requestContent, AbstractGameEngine $engine, array $gameParams = []): JsonResponse
+    protected function process(string $requestContent, AbstractGameEngine $engine): JsonResponse
     {
-        $requestParams = $this->handleRequest($this->createGameRequest(), $requestContent);
+        $requestParameters = $this->handleRequest($requestContent);
 
-        if (!$requestParams) {
+        if (!$requestParameters instanceof GameRequestInterface) {
             return $this->json(
                 [
                     'body' => 'Invalid request params.',
@@ -41,13 +39,13 @@ abstract class GameController extends AbstractController
             );
         }
         //$gameRound = $engine->play(5, $gameParams);
-        switch ($requestParams->getMode()) {
+        switch ($requestParameters->getMode()) {
             case 1:
             case 2:
-                $gameRound = $engine->simulate(5, $gameParams);
+                $gameRound = $engine->simulate(5);
                 break;
             default:
-                $gameRound = $engine->play(5, $gameParams);
+                $gameRound = $engine->play( $requestParameters);
         }
 
         if (!$gameRound instanceof RoundInterface) {
@@ -65,23 +63,22 @@ abstract class GameController extends AbstractController
 
     /**
      * Fetch request parameters, an incorrect format error is also handled.
-     * @param GameRequestInterface $gameRequest
-     * @param string $jsonRequest
+     * @param string $jsonData
      * @return GameRequestInterface|false
      */
-    protected function handleRequest(GameRequestInterface $gameRequest, string $jsonRequest)
+    protected function handleRequest(string $jsonData)
     {
         try {
-            return $gameRequest->setFromJson($gameRequest, $jsonRequest);
+            return $this->createGameRequest($jsonData);
         } catch (\Exception $exception) {
-            var_dump($exception);
             return false;
         }
     }
 
     /**
+     * @param $jsonData
      * @return mixed
      * @todo Short description
      */
-    abstract public function createGameRequest();
+    abstract public function createGameRequest($jsonData);
 }

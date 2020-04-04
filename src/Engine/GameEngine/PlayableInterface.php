@@ -12,6 +12,7 @@
 
 namespace App\Engine\GameEngine;
 
+use App\Model\DTO\Game\GameRequestInterface;
 use App\Model\Round\AbstractRound;
 use App\Model\Round\RoundInterface;
 
@@ -23,8 +24,8 @@ interface PlayableInterface
     /**
      * A method implementing the logic of a single round in the game.
      *
-     * @param int $bet
-     * @return RoundInterface
+     * @param GameRequestInterface $gameRequest
+     * @return AbstractRound
      */
-    public function play(int $bet): AbstractRound;
+    public function play(GameRequestInterface $gameRequest): AbstractRound;
 }

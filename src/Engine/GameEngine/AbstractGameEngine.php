@@ -18,6 +18,7 @@ namespace App\Engine\GameEngine;
 use App\Engine\Helpers\SlotsWinningHelper;
 use App\Engine\Helpers\WinningHelperInterface;
 use App\Engine\SlotsEngine\SlotsEngine;
+use App\Model\DTO\Game\GameRequestInterface;
 use App\Model\DTO\GeneratorConfig;
 use App\Model\DTO\Network\NetworkRequest;
 use App\Model\DTO\Network\NetworkRequestInterface;
@@ -82,11 +83,10 @@ abstract class AbstractGameEngine implements
     }
 
     /**
-     * @param int $bet
-     * @param array $params
+     * @param GameRequestInterface $params
      * @return AbstractRound
      */
-    abstract public function play(int $bet, array $params = []): AbstractRound;
+    abstract public function play(GameRequestInterface $params): AbstractRound;
 
     /**
      * @param RoundInterface $gameRound
