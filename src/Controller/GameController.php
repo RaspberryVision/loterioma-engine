@@ -38,14 +38,14 @@ abstract class GameController extends AbstractController
                 ]
             );
         }
-        //$gameRound = $engine->play(5, $gameParams);
+
         switch ($requestParameters->getMode()) {
             case 1:
             case 2:
                 $gameRound = $engine->simulate(5);
                 break;
             default:
-                $gameRound = $engine->play( $requestParameters);
+                $gameRound = $engine->play($requestParameters);
         }
 
         if (!$gameRound instanceof RoundInterface) {

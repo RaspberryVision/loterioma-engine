@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Engine\Dice\DiceEngine;
 use App\Model\DTO\Game\DicePlayRequest;
 use App\Model\Game\DiceGame;
+use App\NetworkHelper\DataStore\DataStoreHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,8 +21,10 @@ class DiceController extends GameController
      * @param int $id
      * @return JsonResponse
      */
-    public function play(Request $request, int $id): JsonResponse
+    public function play(Request $request, int $id, DataStoreHelper $dataStoreHelper): JsonResponse
     {
+        $gameObject = $dataStoreHelper->fetchGame($id)->getBody();
+
         return $this->process(
             $request->getContent(),
             new DiceEngine($this->mockGame())
