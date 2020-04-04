@@ -30,18 +30,5 @@ use App\Model\DTO\JsonInitializableInterface;
  */
 class DicePlayRequest extends GameRequest
 {
-    /**
-     * @var array $intentions Options added to game, for example bets.
-     */
-    private array $bets;
 
-    /**
-     * Transform object to parameters used as HTTP request params.
-     * @param GameRequestInterface $gameRequest
-     * @param string $json
-     * @return DicePlayRequest
-     */
-    public function setFromJson(GameRequestInterface $gameRequest, string $json) {
-        return parent::setFromJson($gameRequest, $json);
-    }
 }

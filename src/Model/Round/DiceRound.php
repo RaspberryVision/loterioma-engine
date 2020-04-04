@@ -34,13 +34,12 @@ class DiceRound extends AbstractRound
     /**
      * AbstractGameRound constructor.
      * @param GameInterface $game
-     * @param int $bet
      * @param ResultStateInterface $result
      * @param array $bets
      */
-    public function __construct(GameInterface $game, int $bet, ResultStateInterface $result, array $bets)
+    public function __construct(GameInterface $game, ResultStateInterface $result, array $bets)
     {
-        parent::__construct($game, $bet, $result);
+        parent::__construct($game, $result);
         $this->setBets($bets);
     }
 
@@ -71,9 +70,9 @@ class DiceRound extends AbstractRound
     {
         foreach ($bets as $bet) {
             $this->bets [] = new DiceBet(
-                sprintf('Bet for number %d stake %d', $bet['number'], $bet['rate']),
+                sprintf('Bet for number %d stake %d', $bet['number'], $bet['stake']),
                 0,
-                $bet['rate'],
+                $bet['stake'],
                 $bet['number']
             );
         }

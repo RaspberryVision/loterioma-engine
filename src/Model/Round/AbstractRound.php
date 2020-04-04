@@ -63,15 +63,12 @@ abstract class AbstractRound implements RoundInterface, NormalizableBodyInterfac
     /**
      * AbstractGameRound constructor.
      * @param GameInterface $game
-     * @param int $bet
      * @param ResultStateInterface $result
      */
-    public function __construct(GameInterface $game, int $bet, ResultStateInterface $result)
+    public function __construct(GameInterface $game, ResultStateInterface $result)
     {
         $this->status = self::STATUS_DRAWN;
         $this->game = $game;
-        $this->bet = $bet;
-        $this->balance = -$bet;
         $this->result = $result;
     }
 
@@ -140,9 +137,7 @@ abstract class AbstractRound implements RoundInterface, NormalizableBodyInterfac
     {
         return [
             'result' => $this->result->getMatrix(),
-            'status' => $this->status,
-            'balance' => $this->balance,
-            'bet' => $this->bet,
+            'status' => $this->status
         ];
     }
 

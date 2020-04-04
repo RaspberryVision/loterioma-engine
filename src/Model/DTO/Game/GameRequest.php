@@ -23,10 +23,18 @@ use App\Model\DTO\JsonInitializableInterface;
  */
 class GameRequest implements JsonInitializableInterface, GameRequestInterface
 {
+    public const REQUIRED_PROPERTIES = [
+        'mode',
+        'gameId',
+        'client',
+        'userId',
+        'parameters',
+    ];
+
     /**
-     * @var string $gameHash Unique game hash.
+     * @var int $gameId Unique game hash.
      */
-    private string $gameHash;
+    private int $gameId;
 
     /**
      * @var string $client Client app hash.
@@ -34,9 +42,9 @@ class GameRequest implements JsonInitializableInterface, GameRequestInterface
     private string $client;
 
     /**
-     * @var string $userHash
+     * @var int $userId
      */
-    private string $userHash;
+    private int $userId;
 
     /**
      * @var int $mode Specific game mode.
@@ -44,11 +52,25 @@ class GameRequest implements JsonInitializableInterface, GameRequestInterface
     private int $mode;
 
     /**
-     * @return string
+     * @var array $parameters
      */
-    public function getGameHash(): string
+    private array $parameters;
+
+    /**
+     * GameRequest constructor.
+     * @param string $jsonData
+     */
+    public function __construct(string $jsonData)
     {
-        return $this->gameHash;
+        $this->setFromJson($jsonData);
+    }
+
+    /**
+     * @return int
+     */
+    public function getGameId(): int
+    {
+        return $this->gameId;
     }
 
     /**
@@ -60,11 +82,11 @@ class GameRequest implements JsonInitializableInterface, GameRequestInterface
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getUserHash(): string
+    public function getUserId(): int
     {
-        return $this->userHash;
+        return $this->userId;
     }
 
     /**
@@ -76,23 +98,99 @@ class GameRequest implements JsonInitializableInterface, GameRequestInterface
     }
 
     /**
-     * Transform object to parameters used as HTTP request params.
-     * @param GameRequestInterface $request
-     * @param string $json
-     * @return GameRequest|false
+     * @return array
      */
-    public function setFromJson(GameRequestInterface $request, string $json)
+    public function getParameters(): array
     {
-        $data = json_decode($json);
+        return $this->parameters;
+    }
 
-        if (!$data) {
-            return false;
+    /**
+     * @param int $gameId
+     * @return GameRequest
+     */
+    public function setGameId(int $gameId): GameRequest
+    {
+        $this->gameId = $gameId;
+
+        return $this;
+    }
+
+    /**
+     * @param string $client
+     * @return GameRequest
+     */
+    public function setClient(string $client): GameRequest
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    /**
+     * @param int $userId
+     * @return GameRequest
+     */
+    public function setUserId(int $userId): GameRequest
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    /**
+     * @param int $mode
+     * @return GameRequest
+     */
+    public function setMode(int $mode): GameRequest
+    {
+        $this->mode = $mode;
+
+        return $this;
+    }
+
+    /**
+     * @param array $parameters
+     * @return GameRequest
+     */
+    public function setParameters(array $parameters): GameRequest
+    {
+        $this->parameters = $parameters;
+
+        return $this;
+    }
+
+    /**
+     * Transform object to parameters used as HTTP request params.
+     * @param string $json
+     * @return bool|void
+     */
+    public function setFromJson(string $json)
+    {
+        $data = json_decode($json, true);
+
+        if (!$data || !$this->checkRequiredProperties($data)) {
+            throw new \LogicException('Invalid required property value!');
         }
 
         foreach ($data as $key => $value) {
-            $request->{$key} = $value;
+            $this->{$key} = $value;
+        }
+    }
+
+    /**
+     * Check that all required properties is set in request data.
+     * @param array $data
+     * @return bool
+     */
+    private function checkRequiredProperties(array $data): bool
+    {
+        foreach ($this::REQUIRED_PROPERTIES as $property) {
+            if (!isset($data[$property])) {
+                return false;
+            }
         }
 
-        return $request;
+        return true;
     }
 }
