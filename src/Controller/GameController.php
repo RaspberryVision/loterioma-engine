@@ -27,7 +27,6 @@ abstract class GameController extends AbstractController
     protected function process(string $requestContent, AbstractGameEngine $engine): JsonResponse
     {
         $requestParameters = $this->handleRequest($requestContent);
-
         if (!$requestParameters instanceof GameRequestInterface) {
             return $this->json(
                 [

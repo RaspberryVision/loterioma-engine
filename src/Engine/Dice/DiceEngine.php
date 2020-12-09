@@ -21,6 +21,7 @@ namespace App\Engine\Dice;
 
 use App\Engine\GameEngine\AbstractGameEngine;
 use App\Engine\Helpers\DiceWinningHelper;
+use App\Entity\Game;
 use App\Model\DTO\Game\GameRequestInterface;
 use App\Model\DTO\GeneratorConfig;
 use App\Model\DTO\Network\NetworkRequest;
@@ -41,9 +42,9 @@ class DiceEngine extends AbstractGameEngine
 {
     /**
      * DiceEngine constructor.
-     * @param DiceGame $game
+     * @param Game $game
      */
-    public function __construct(DiceGame $game)
+    public function __construct(Game $game)
     {
         parent::__construct($game, new DiceWinningHelper());
     }
